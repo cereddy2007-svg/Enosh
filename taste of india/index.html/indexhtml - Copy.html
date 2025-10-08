@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FastBite - Food Menu with Cart</title>
+  <style>
+    .navbar {
+      background-color: #ff5e00;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 40px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .navbar .logo {
+      font-size: 26px;
+      font-weight: bold;
+      color: white;
+      letter-spacing: 1px;
+    }
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+    .navbar ul li {
+      margin: 0 12px;
+    }
+    .navbar ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .navbar ul li a:hover {
+      color: #000000;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=60') no-repeat center center fixed;
+      background-size: cover;
+      background-color: #222;
+      color: white;
+      padding-top: 110px;
+    }
+    h1 {
+      text-align: center;
+      color: #ff5733;
+      margin-top: 24px;
+      text-shadow: 1px 1px 3px #000;
+    }
+    .search-menu-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 32px auto 0 auto;
+      gap: 20px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    #searchBox {
+      padding: 10px;
+      width: 60vw;
+      max-width: 400px;
+      font-size: 16px;
+      border: 2px solid #ff6b3d;
+      border-radius: 12px;
+      outline: none;
+    }
+    #menuButton {
+      background-color: #ff6b3d;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-left: 4px;
+    }
+    #menuButton:hover {
+      background-color: #e65a2d;
+    }
+    .menu-category {
+      margin: 40px auto 12px auto;
+      max-width: 1100px;
+    }
+    .menu-category-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffae42;
+      text-align: left;
+      margin-left: 10px;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 2px #000;
+    }
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      padding: 16px;
+      gap: 24px;
+    }
+    .item {
+      background-color: rgba(0,0,0,0.7);
+      border-radius: 20px;
+      color: white;
+      width: 28%;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      padding: 24px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s;
+    }
+    .item:hover {
+      transform: scale(1.03);
+    }
+    .item a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .item a:hover {
+      color: #ffae42;
+    }
+    .item p {
+      font-size: 14px;
+      margin-bottom: 12px;
+      flex-grow: 1;
+    }
+    .item button {
+      background-color: #ff6b3d;
+      border: none;
+      padding: 10px 0;
+      border-radius: 10px;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .item button:hover {
+      background-color: #e65a2d;
+    }
+    .buySwiggyItemBtn {
+      background-color: #34a853;
+      border: none;
+      padding: 10px 0;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .buySwiggyItemBtn:hover {
+      background-color: #0c7a29;
+    }
+    .detailsBtn {
+      background-color: #1976d2;
+      border: none;
+      padding: 10px 0;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .detailsBtn:hover {
+      background-color: #145a9c;
+    }
+    #cartButton {
+      background-color: #ff6b3d;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+      margin-left: 16px;
+    }
+    #cartButton:hover {
+      background-color: #e65a2d;
+    }
+    #cartCount {
+      position: absolute;
+      top: -5px;
+      right: -10px;
+      background: red;
+      color: white;
+      font-weight: bold;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+    #cartModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+    #cartContent {
+      background-color: #222;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 800px;
+      color: white;
+    }
+    #cartContent h2 {
+      margin-top: 0;
+    }
+    #cartItems {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    #cartItems table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #cartItems th, #cartItems td {
+      border-bottom: 1px solid #444;
+      padding: 8px;
+      text-align: center;
+    }
+    #cartCloseBtn {
+      float: right;
+      background-color: transparent;
+      border: none;
+      color: #ff6b3d;
+      font-size: 28px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #cartClearBtn, #checkoutBtn {
+      background-color: #ff6b3d;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s;
+    }
+    #cartClearBtn:hover, #checkoutBtn:hover {
+      background-color: #e65a2d;
+    }
+    .section {
+      display: none;
+      text-align: center;
+      padding: 24px;
+      margin-top: 20px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .section.active {
+      display: block;
+    }
+    .section p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+    .reviews-list p {
+      margin: 8px 0;
+      background: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .reviews-form {
+      margin-top: 16px;
+    }
+    .reviews-form input, .reviews-form textarea {
+      width: 90%;
+      max-width: 500px;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #111;
+      color: #fff;
+      font-size: 15px;
+    }
+    .reviews-form button {
+      background-color: #ff6b3d;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 6px;
+    }
+    .reviews-form button:hover {
+      background-color: #e65a2d;
+    }
+    @media (max-width: 1100px) {
+      .item { width: 45%; }
+    }
+    @media (max-width: 700px) {
+      .menu { flex-direction: column; }
+      .item { width: 95%; }
+      #searchBox { width: 95vw; }
+      .search-menu-container { flex-direction: column; gap: 12px;}
+      .menu-category { margin: 16px auto 8px auto;}
+      .menu-category-title { font-size: 20px; margin-left: 2px;}
+      .navbar {
+        flex-direction: column;
+        padding: 10px 20px;
+      }
+      .navbar ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      .navbar ul li {
+        margin: 5px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">FastBite</div>
+    <ul>
+      <li><a href="#" onclick="showSection('home')">Home</a></li>
+      <li><a href="#" onclick="showSection('about')">About</a></li>
+      <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+      <li><a href="#" onclick="showSection('help')">Help</a></li>
+      <li><a href="#" onclick="showSection('reviews')">Reviews</a></li>
+      <li>
+        <button id="cartButton" aria-label="View Cart" onclick="toggleCart()">
+          Cart <span id="cartCount">0</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <h1>Taste of India Food Menu</h1>
+
+  <div class="search-menu-container">
+    <input type="text" id="searchBox" placeholder="Search your favorite dish..." onkeyup="debouncedSearch()" />
+    <button id="menuButton" aria-label="View Menu" onclick="showSection('menu')">Menu</button>
+  </div>
+
+  <!-- Home Section -->
+  <div class="section active" id="home">
+    <h2>Welcome to FastBite!</h2>
+    <p>Explore delicious Indian cuisine at your fingertips. We bring authentic flavors right to your home.</p>
+    <p>Browse our extensive menu of vegetarian, non-vegetarian, tiffins, desserts and more. Add items to cart or buy directly on Swiggy.</p>
+  </div>
+
+  <!-- About Section -->
+  <div class="section" id="about">
+    <h2>About FastBite</h2>
+    <p>FastBite is your gateway to discovering and ordering authentic Indian dishes from the comfort of your home.</p>
+    <p>We curate popular dishes across categories including vegetarian specialties, non-vegetarian delights, traditional tiffin items, desserts, and refreshing beverages.</p>
+    <p>Our platform makes it easy to browse, search, and order your favorites with integrated cart functionality and direct Swiggy ordering.</p>
+  </div>
+
+  <!-- Contact Section -->
+  <div class="section" id="contact">
+    <h2>Contact Us</h2>
+    <p>Have questions or feedback? We'd love to hear from you!</p>
+    <p>Email: support@fastbite.com</p>
+    <p>Phone: +91 9876543210</p>
+    <p>Address: 123 Food Street, Bangalore, Karnataka 560001</p>
+  </div>
+
+  <!-- Help Section -->
+  <div class="section" id="help">
+    <h2>Help & FAQs</h2>
+    <p><strong>How do I search for items?</strong><br>Type the dish name in the search box to instantly filter menu items.</p>
+    <p><strong>How does the cart work?</strong><br>Click "Add to Cart" on any item, then open your cart from the navbar to view, modify quantities, or remove items.</p>
+    <p><strong>What is Buy Now on Swiggy?</strong><br>Clicking this button opens Swiggy's search page for that specific dish in a new tab, letting you order directly from nearby restaurants.</p>
+    <p><strong>Is my cart saved?</strong><br>Yes! Your cart is saved in browser storage and persists even if you close the tab.</p>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="section" id="reviews">
+    <h2>Customer Reviews</h2>
+    <div class="reviews-list" id="staticReviews">
+      <p><strong>Ananya:</strong> Loved the Paneer Tikka — perfectly spiced and grilled!</p>
+      <p><strong>Rahul:</strong> Biryani was amazing, authentic Hyderabadi flavors.</p>
+      <p><strong>Meera:</strong> Gulab Jamun was warm and absolutely delicious.</p>
+      <p><strong>Kiran:</strong> Great variety of South Indian tiffin items!</p>
+    </div>
+    <div class="reviews-form">
+      <h3>Add Your Review</h3>
+      <form id="reviewForm" onsubmit="addReview(event)">
+        <input type="text" id="reviewerName" placeholder="Your Name" required />
+        <br />
+        <textarea id="reviewText" placeholder="Share your experience..." rows="3" required></textarea>
+        <br />
+        <button type="submit">Submit Review</button>
+      </form>
+      <div id="dynamicReviews" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- Menu Section -->
+  <div class="section" id="menu">
+    <h2>Our Menu</h2>
+	<!-- Veg Items -->
+    <div class="menu-category">
+      <div class="menu-category-title">Veg Items</div>
+      <div class="menu">
+        <div class="item" data-category="Veg Items" data-name="Samosa" data-price="40">
+          <a href="#">Samosa</a>
+          <p>Crispy deep-fried pastry filled with spiced potatoes and peas.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹40</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Samosa')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Chole Bhature" data-price="120">
+          <a href="#">Chole Bhature</a>
+          <p>Spicy chickpeas served with deep-fried fluffy bread.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹120</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chole Bhature')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Pav Bhaji" data-price="100">
+          <a href="#">Pav Bhaji</a>
+          <p>Mashed vegetable curry served with buttery bread rolls.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹100</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Pav Bhaji')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Paneer Tikka" data-price="180">
+          <a href="#">Paneer Tikka</a>
+          <p>Grilled cottage cheese cubes marinated in spices.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹180</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Paneer Tikka')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Rajma Chawal" data-price="140">
+          <a href="#">Rajma Chawal</a>
+          <p>Steamed rice served with spicy kidney bean curry.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹140</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Rajma Chawal')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Aloo Tikki" data-price="60">
+          <a href="#">Aloo Tikki</a>
+          <p>Crispy potato patties served with chutneys.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹60</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Aloo Tikki')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Chana Masala" data-price="130">
+          <a href="#">Chana Masala</a>
+          <p>Spiced chickpeas in a rich tomato-based gravy.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹130</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chana Masala')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Veg Fried Rice" data-price="140">
+          <a href="#">Veg Fried Rice</a>
+          <p>Fried rice mixed with assorted vegetables and spices.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹140</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Veg Fried Rice')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Veg Noodles" data-price="130">
+          <a href="#">Veg Noodles</a>
+          <p>Stir-fried noodles loaded with vegetables and soy flavor.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹130</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Veg Noodles')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Chilli Egg" data-price="120">
+          <a href="#">Chilli Egg</a>
+          <p>Fried egg tossed in spicy Indo-Chinese sauce.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹120</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chilli Egg')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Special Fried Rice" data-price="160">
+          <a href="#">Special Fried Rice</a>
+          <p>Flavorful fried rice with vegetables and aromatic spices.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹160</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Special Fried Rice')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Veg Soup" data-price="80">
+          <a href="#">Veg Soup</a>
+          <p>Light and healthy soup made with fresh vegetables.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹80</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Veg Soup')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Curd Rice" data-price="90">
+          <a href="#">Curd Rice</a>
+          <p>South Indian comfort food made with curd and rice.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹90</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Curd Rice')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Butter Naan" data-price="60">
+          <a href="#">Butter Naan</a>
+          <p>Soft flatbread brushed with melted butter.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹60</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Butter Naan')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Pulka" data-price="40">
+          <a href="#">Pulka</a>
+          <p>Soft, oil-free Indian flatbread made from wheat flour.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹40</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Pulka')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Kajupaneer" data-price="220">
+          <a href="#">Kajupaneer</a>
+          <p>Paneer cooked in a creamy cashew nut gravy.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹220</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Kajupaneer')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Methi Chaman" data-price="190">
+          <a href="#">Methi Chaman</a>
+          <p>North Indian curry made with fenugreek and paneer.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹190</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Methi Chaman')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+        <div class="item" data-category="Veg Items" data-name="Gutti Vankaya Curry" data-price="140">
+          <a href="#">Gutti Vankaya Curry</a>
+          <p>Spicy stuffed brinjal curry with peanut and sesame masala.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹140</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Gutti Vankaya Curry')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Non Veg Items -->
+    <div class="menu-category">
+      <div class="menu-category-title">Non Veg Items</div>
+      <div class="menu">
+        <div class="item" data-category="Non Veg Items" data-name="Biryani" data-price="250">
+          <a href="#">Biryani</a>
+          <p>Spiced rice cooked with marinated meat or vegetables.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹250</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Biryani')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('PASTE_BIRYANI_DETAILS_URL_HERE')">Details</button>
+        </div>
+		  <div class="item" data-category="Veg Items" data-name="Rajula Palav" data-price="160">
+          <a href="#">Rajula Palav</a>
+          <p>Traditional Andhra-style spiced rice dish.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹160</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Rajula Palav')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('')">Details</button>
+        </div>
+      
+        <div class="item" data-category="Non Veg Items" data-name="Butter Chicken" data-price="280">
+          <a href="#">Butter Chicken</a>
+          <p>Chicken in creamy tomato-based spiced gravy.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹280</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Butter Chicken')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('PASTE_BUTTER_CHICKEN_DETAILS_URL_HERE')">Details</button>
+        </div>
+        <div class="item" data-category="Non Veg Items" data-name="Fish Curry" data-price="260">
+          <a href="#">Fish Curry</a>
+          <p>Spicy and tangy curry made with tender fish pieces.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹260</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Fish Curry')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('PASTE_FISH_CURRY_DETAILS_URL_HERE')">Details</button>
+        </div>
+		<div class="item" data-category="Non Veg Items" data-name="Prawns Biryani" data-price="320">
+  <a href="#">Prawns Biryani</a>
+  <p>Flavourful biryani made with fresh prawns and aromatic spices.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹320</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Prawns Biryani')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_PRAWNS_BIRYANI_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Chicken Fried Rice" data-price="180">
+  <a href="#">Chicken Fried Rice</a>
+  <p>Stir-fried rice tossed with chicken, veggies, and sauces.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹180</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chicken Fried Rice')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_CHICKEN_FRIED_RICE_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Mugalai Biryani" data-price="300">
+  <a href="#">Mugalai Biryani</a>
+  <p>Rich biryani with Mughlai spices and tender meat.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹300</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Mugalai Biryani')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_MUGALAI_BIRYANI_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Keema Prawns" data-price="280">
+  <a href="#">Keema Prawns</a>
+  <p>Minced prawns cooked in spicy masala.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹280</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Keema Prawns')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_KEEMA_PRAWNS_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Mixed Biryani" data-price="310">
+  <a href="#">Mixed Biryani</a>
+  <p>Biryani made with a mix of chicken, mutton, and egg.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹310</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Mixed Biryani')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_MIXED_BIRYANI_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Hyderabad Dhum" data-price="290">
+  <a href="#">Hyderabad Dhum</a>
+  <p>Hyderabadi-style slow-cooked biryani with spices.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹290</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Hyderabad Dhum')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_HYDERABAD_DHUM_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Chicken Lollipops" data-price="200">
+  <a href="#">Chicken Lollipops</a>
+  <p>Spicy deep-fried chicken wings served as starters.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹200</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chicken Lollipops')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_CHICKEN_LOLLIPOPS_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Maharaja Chicken" data-price="270">
+  <a href="#">Maharaja Chicken</a>
+  <p>Royal-style chicken curry with rich gravy.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹270</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Maharaja Chicken')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_MAHARAJA_CHICKEN_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Honey Chicken" data-price="250">
+  <a href="#">Honey Chicken</a>
+  <p>Sweet and spicy glazed chicken dish.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹250</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Honey Chicken')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_HONEY_CHICKEN_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="King Prawn" data-price="340">
+  <a href="#">King Prawn</a>
+  <p>Juicy king prawns cooked with exotic spices.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹340</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('King Prawn')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_KING_PRAWN_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Mutton Soup" data-price="150">
+  <a href="#">Mutton Soup</a>
+  <p>Warm and spicy soup made from tender mutton.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹150</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Mutton Soup')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_MUTTON_SOUP_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Idli" data-price="60">
+  <a href="#">Idli</a>
+  <p>Soft steamed rice cakes, a healthy South Indian breakfast.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹60</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Idli')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_IDLI_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Vada Pav" data-price="50">
+  <a href="#">Vada Pav</a>
+  <p>Fried potato dumpling in a bun served with chutneys.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹50</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Vada Pav')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_VADA_PAV_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Paratha" data-price="70">
+  <a href="#">Paratha</a>
+  <p>Layered Indian flatbread usually served with pickle or yogurt.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹70</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Paratha')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_PARATHA_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Paniyaram" data-price="85">
+  <a href="#">Paniyaram</a>
+  <p>South Indian dumplings made from fermented rice batter.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹85</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Paniyaram')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_PANIYARAM_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Aloo Tikki" data-price="70">
+  <a href="#">Aloo Tikki</a>
+  <p>Crispy potato patties served with chutneys.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹70</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Aloo Tikki')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_ALOO_TIKKI_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Poha" data-price="75">
+  <a href="#">Poha</a>
+  <p>Flattened rice cooked with mustard, curry leaves, and peanuts.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹75</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Poha')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_POHA_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Uttapam" data-price="90">
+  <a href="#">Uttapam</a>
+  <p>Thick South Indian pancake topped with onions and chilies.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹90</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Uttapam')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_UTTAPAM_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Tiffens" data-name="Medu Vada" data-price="80">
+  <a href="#">Medu Vada</a>
+  <p>Fried savory donut made with urad dal batter.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹80</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Medu Vada')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_MEDU_VADA_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Chilli Chicken" data-price="240">
+  <a href="#">Chilli Chicken</a>
+  <p>Spicy Indo-Chinese chicken tossed with sauces and peppers.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹240</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chilli Chicken')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_CHILLI_CHICKEN_DETAILS_URL_HERE')">Details</button>
+</div>
+
+<div class="item" data-category="Non Veg Items" data-name="Chicken 65" data-price="220">
+  <a href="#">Chicken 65</a>
+  <p>Deep-fried chicken bites marinated in spicy South Indian flavors.</p>
+  <button onclick="addToCart(this)">Add to Cart - ₹220</button>
+  <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Chicken 65')">Buy Now on Swiggy</button>
+  <button class="detailsBtn" onclick="openDetails('PASTE_CHICKEN_65_DETAILS_URL_HERE')">Details</button>
+</div>
+
+		
+        <!-- Continue adding all items similarly with the Details button -->
+        <!-- For brevity, not all items shown here; replicate below pattern for all items -->
+      </div>
+    </div>
+
+    <!-- Tiffens -->
+    <div class="menu-category">
+      <div class="menu-category-title">Tiffens</div>
+      <div class="menu">
+        <div class="item" data-category="Tiffens" data-name="Dosa" data-price="80">
+          <a href="#">Dosa</a>
+          <p>Thin crispy pancake made from fermented rice and lentils.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹80</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Dosa')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('PASTE_DOSA_DETAILS_URL_HERE')">Details</button>
+        </div>
+        <!-- Add other tiffin items similarly -->
+      </div>
+    </div>
+
+    <!-- Desserts -->
+    <div class="menu-category">
+      <div class="menu-category-title">Desserts</div>
+      <div class="menu">
+        <div class="item" data-category="Desserts" data-name="Gulab Jamun" data-price="90">
+          <a href="#">Gulab Jamun</a>
+          <p>Soft fried dough balls soaked in sugar syrup.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹90</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Gulab Jamun')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('PASTE_GULAB_JAMUN_DETAILS_URL_HERE')">Details</button>
+        </div>
+        <div class="item" data-category="Desserts" data-name="Kheer" data-price="100">
+          <a href="#">Kheer</a>
+          <p>Traditional Indian rice pudding made with milk and sugar.</p>
+          <button onclick="addToCart(this)">Add to Cart - ₹100</button>
+          <button class="buySwiggyItemBtn" onclick="buyOnSwiggy('Kheer')">Buy Now on Swiggy</button>
+          <button class="detailsBtn" onclick="openDetails('PASTE_KHEER_DETAILS_URL_HERE')">Details</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cartModal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <div id="cartContent">
+      <button id="cartCloseBtn" aria-label="Close Cart" onclick="toggleCart()">×</button>
+      <h2 id="cartTitle">Your Cart</h2>
+      <div id="cartItems">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+              <th>Action</th>
+              <th>Buy Now</th>
+            </tr>
+          </thead>
+          <tbody id="cartTableBody"></tbody>
+        </table>
+      </div>
+      <div>
+        <strong>Total Price: ₹<span id="cartTotal">0</span></strong>
+      </div>
+      <div style="margin-top: 15px;">
+        <button id="cartClearBtn" onclick="clearCart()">Clear Cart</button>
+        <button id="checkoutBtn" onclick="checkout()">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Section Navigation
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.add('active');
+    }
+
+    // Search Functionality
+    function searchFood() {
+      let input = document.getElementById('searchBox').value.toLowerCase();
+      let items = document.querySelectorAll('.menu .item');
+      items.forEach(item => {
+        let name = item.querySelector('a').innerText.toLowerCase();
+        item.style.display = name.includes(input) ? '' : 'none';
+      });
+    }
+
+    let searchTimeout;
+    function debouncedSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(searchFood, 150);
+    }
+
+    // Review System
+    function addReview(event) {
+      event.preventDefault();
+      const name = document.getElementById('reviewerName').value.trim();
+      const text = document.getElementById('reviewText').value.trim();
+      if (!name || !text) return;
+
+      const dynamicReviews = document.getElementById('dynamicReviews');
+      const newReview = document.createElement('p');
+      const strong = document.createElement('strong');
+      strong.textContent = name + ': ';
+      newReview.appendChild(strong);
+      newReview.appendChild(document.createTextNode(text));
+      newReview.style.background = 'rgba(0,0,0,0.5)';
+      newReview.style.padding = '10px';
+      newReview.style.borderRadius = '8px';
+      newReview.style.margin = '8px 0';
+      dynamicReviews.appendChild(newReview);
+      document.getElementById('reviewForm').reset();
+    }
+
+    // Cart System
+    let cart = JSON.parse(localStorage.getItem('fastBiteCart')) || {};
+
+    function updateCartCount() {
+      const count = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+      document.getElementById('cartCount').innerText = count;
+    }
+
+    function saveCart() {
+      localStorage.setItem('fastBiteCart', JSON.stringify(cart));
+      updateCartCount();
+    }
+
+    function addToCart(button) {
+      const itemDiv = button.closest('.item');
+      const id = itemDiv.getAttribute('data-name');
+      const price = parseFloat(itemDiv.getAttribute('data-price')) || 0;
+
+      if (cart[id]) {
+        cart[id].qty++;
+      } else {
+        cart[id] = { name: id, price: price, qty: 1 };
+      }
+      saveCart();
+      alert(id + ' added to cart!');
+    }
+
+    function toggleCart() {
+      const modal = document.getElementById('cartModal');
+      if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+      } else {
+        modal.style.display = 'block';
+        renderCart();
+      }
+    }
+
+    function renderCart() {
+      const tbody = document.getElementById('cartTableBody');
+      tbody.innerHTML = '';
+      let total = 0;
+
+      for (const key in cart) {
+        const item = cart[key];
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.name}</td>
+          <td><input type="number" min="1" value="${item.qty}" style="width:50px;" onchange="updateQty('${key.replace(/'/g, "\\'")}', this.value)"></td>
+          <td>₹${item.price.toFixed(2)}</td>
+          <td>₹${itemTotal.toFixed(2)}</td>
+          <td><button onclick="removeItem('${key.replace(/'/g, "\\'")}')">Remove</button></td>
+          <td><button class="buySwiggyItemBtn" onclick="buyOnSwiggy('${item.name}')">Buy Now on Swiggy</button></td>
+        `;
+        tbody.appendChild(tr);
+      }
+      document.getElementById('cartTotal').innerText = total.toFixed(2);
+    }
+
+    function updateQty(itemName, qty) {
+      qty = Number(qty);
+      if (qty <= 0) {
+        delete cart[itemName];
+      } else {
+        cart[itemName].qty = qty;
+      }
+      saveCart();
+      renderCart();
+    }
+
+    function removeItem(itemName) {
+      delete cart[itemName];
+      saveCart();
+      renderCart();
+    }
+
+    function clearCart() {
+      if (confirm('Clear all items from cart?')) {
+        cart = {};
+        saveCart();
+        renderCart();
+      }
+    }
+
+    function checkout() {
+      if (Object.keys(cart).length === 0) {
+        alert('Your cart is empty');
+        return;
+      }
+      alert('Proceeding to checkout. Your order has ' + Object.keys(cart).length + ' items totaling ₹' + document.getElementById('cartTotal').innerText);
+      cart = {};
+      saveCart();
+      toggleCart();
+    }
+
+    // Buy on Swiggy
+    function buyOnSwiggy(itemName) {
+      const url = https://www.swiggy.com/search?query=${encodeURIComponent(itemName)};
+      window.open(url, '_blank');
+    }
+
+    // Details link opener (opens in a new tab)
+    function openDetails(url) {
+      if (!url || url.trim() === '') {
+        alert('Details page URL not set. Please paste your details page link for this item.');
+        return;
+      }
+      window.open(url, '_blank');
+    }
+
+    // Initialize
+    updateCartCount();
+  </script>
+</body>
+</html>
